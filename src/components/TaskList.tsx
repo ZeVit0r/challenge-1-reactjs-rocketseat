@@ -14,16 +14,36 @@ export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
-  function handleCreateNewTask() {
-    // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+  function handleCreateNewTask(event: React.FormEvent<HTMLButtonElement> ,newTaskTitle: string) {
+    event.preventDefault();
+
+    if(newTaskTitle){
+      const newTask: Task = {
+        id: Math.floor(Date.now() * Math.random()),
+        title: newTaskTitle,
+        isComplete: false,
+      }
+    
+      setTasks([...tasks, newTask]);
+    }
+
+    setNewTaskTitle('')
   }
 
   function handleToggleTaskCompletion(id: number) {
-    // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    const newArrayTasks: Array<Task> = tasks.map((task) => {
+      if(task.id===id){
+        task.isComplete = !task.isComplete;
+      }
+      return task;
+    })
+
+    setTasks([...newArrayTasks])
   }
 
   function handleRemoveTask(id: number) {
-    // Remova uma task da listagem pelo ID
+    const newArrayTasks: Array<Task> = tasks.filter(task => task.id !== id)
+    setTasks([...newArrayTasks])
   }
 
   return (
@@ -38,7 +58,7 @@ export function TaskList() {
             onChange={(e) => setNewTaskTitle(e.target.value)}
             value={newTaskTitle}
           />
-          <button type="submit" data-testid="add-task-button" onClick={handleCreateNewTask}>
+          <button type="submit" data-testid="add-task-button" onClick={event => handleCreateNewTask(event, newTaskTitle)}>
             <FiCheckSquare size={16} color="#fff"/>
           </button>
         </div>
